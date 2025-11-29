@@ -23,7 +23,7 @@
             overflow-x: hidden;
         }
 
-        /* --- Header с Progressive Blur (из index2.html) --- */
+        /* --- Header с Progressive Blur --- */
         header {
             position: fixed;
             top: 0;
@@ -73,19 +73,40 @@
             object-fit: cover;
         }
 
+        /* --- СТИЛИ КНОПКИ "СВЯЗАТЬСЯ" --- */
         .header-contact {
             background: #161616;
             color: #F5F5F5;
             padding: 0.75rem 2rem;
-            border-radius: 30px;
+            border-radius: 30px; /* Скругление есть, пока кнопка черная */
             text-decoration: none;
             font-size: 1rem;
-            transition: all 0.3s ease, transform 0.1s ease;
+            
+            transition: transform 0.1s ease; 
+            
             transform-style: preserve-3d;
+            
+            /* Свойства для фона */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border: 1px solid transparent;
         }
 
-        .header-contact:hover {
-            background: #7B7B7B;
+        /* 2. Находим и меняем блок hover (состояние при наведении) */
+        .header-contact:hover, 
+        .header-contact:active {
+            /* Ссылка на картинку */
+            background-image: url('Group 973.png?w=600&h=200&fit=crop');
+            
+            background-color: transparent;
+            color: #FFFFFF;
+            border-color: transparent;
+            text-shadow: none;
+            transform: scale(1.05);
+            
+            /* ВАЖНО: Убираем скругление углов при появлении картинки */
+            border-radius: 0; 
         }
 
         /* --- Hero Section --- */
@@ -99,7 +120,6 @@
             overflow: visible; 
         }
 
-        /* Большое желтое пятно (из index2.html) */
         .hero::before {
             content: '';
             position: absolute;
@@ -156,7 +176,7 @@
             margin-bottom: 0.5rem;
         }
 
-        /* --- Interactive Word Reveal (Логика index2.html) --- */
+        /* --- Interactive Word Reveal --- */
         .word-reveal {
             position: relative;
             cursor: pointer;
@@ -176,7 +196,6 @@
             pointer-events: none;
             transform-origin: center center;
             opacity: 0;
-            /* Начальное состояние из index2.html */
             transform: translate(-50%, -40%) scale(0.8) rotate(0deg);
             filter: blur(10px);
             transition: 
@@ -299,7 +318,6 @@
             width: 100%;
             height: 250px;
             object-fit: cover;
-            /* Из index2.html: привязка к левому краю */
             object-position: left center;
         }
 
@@ -373,7 +391,7 @@
             transform: scale(1.1);
         }
 
-        /* --- Footer (из index2.html) --- */
+        /* --- Footer --- */
         footer {
             padding: 4rem 2rem 2rem 2rem; 
             background: #F5F3F1;
@@ -394,6 +412,7 @@
             z-index: 1; 
         }
 
+        /* Убрали все CSS анимации движения (floating), чтобы не конфликтовать с JS */
         .footer-glow {
             position: absolute;
             width: 500px;
@@ -404,23 +423,17 @@
             z-index: -1;
             top: 0;
             left: 0;
-            transform: translate(-50%, -50%); 
-            transition: opacity 0.5s ease;
-            opacity: 0.8;
+            /* Начальная позиция (центр будет задан JS, но скроем пока не инициализируется) */
+            opacity: 0; 
             filter: blur(40px);
+            /* Важно: transition не используем для transform, только для opacity, чтобы JS двигал без задержек */
+            transition: opacity 0.5s ease;
+            transform: translate(-50%, -50%); 
         }
-
-        .footer-glow.floating {
-            top: 50%;
-            left: 50%;
-            animation: moveFooterGlow 12s ease-in-out infinite;
-        }
-
-        @keyframes moveFooterGlow {
-            0% { transform: translate(-50%, -50%) translate(-30%, -20%); }
-            33% { transform: translate(-50%, -50%) translate(30%, 10%); }
-            66% { transform: translate(-50%, -50%) translate(10%, -30%); }
-            100% { transform: translate(-50%, -50%) translate(-30%, -20%); }
+        
+        /* Когда JS инициализировался, показываем */
+        .footer-glow.active {
+            opacity: 0.8;
         }
 
         .footer-email {
@@ -660,7 +673,7 @@
 
     <footer>
         <div class="footer-container">
-            <div class="footer-glow floating"></div>
+            <div class="footer-glow"></div>
             
             <div class="footer-email">mail@gmail.com</div>
             <div class="footer-socials">
@@ -829,30 +842,88 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            // --- Interactive Footer Glow ---
+            // --- ПОЛНОСТЬЮ ПЕРЕПИСАННАЯ ЛОГИКА ФУТЕРА (PHYSICS BASED) ---
             const footerContainer = document.querySelector('.footer-container');
             const footerGlow = document.querySelector('.footer-glow');
 
             if (footerContainer && footerGlow) {
-                footerContainer.addEventListener('mousemove', function(e) {
-                    footerGlow.classList.remove('floating');
-                    
+                // Переменные состояния
+                let currentX = 0, currentY = 0; // Текущая позиция пятна
+                let targetX = 0, targetY = 0;   // Куда пятно стремится
+                let isHovering = false;         // Мышка внутри?
+                let containerRect = footerContainer.getBoundingClientRect(); // Кешируем размер
+                
+                // Инициализация при старте (центр контейнера)
+                currentX = containerRect.width / 2;
+                currentY = containerRect.height / 2;
+                targetX = currentX;
+                targetY = currentY;
+
+                // Показываем элемент после инициализации, чтобы не мелькнул в углу
+                footerGlow.classList.add('active');
+
+                // Обработчики событий
+                window.addEventListener('resize', () => {
+                    containerRect = footerContainer.getBoundingClientRect();
+                    // Если не ховер, сбрасываем в центр при ресайзе
+                    if(!isHovering) {
+                        currentX = containerRect.width / 2;
+                        currentY = containerRect.height / 2;
+                    }
+                });
+
+                footerContainer.addEventListener('mousemove', (e) => {
+                    isHovering = true;
+                    // Обновляем цель (курсор относительно контейнера)
+                    // Используем свежий getBoundingClientRect внутри, если страница скроллится
                     const rect = footerContainer.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    footerGlow.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-                    footerGlow.style.opacity = '1';
+                    targetX = e.clientX - rect.left;
+                    targetY = e.clientY - rect.top;
                 });
 
-                footerContainer.addEventListener('mouseleave', function() {
-                    footerGlow.classList.add('floating');
-                    footerGlow.style.transform = ''; 
-                    footerGlow.style.opacity = '0.8';
+                footerContainer.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    // При уходе мышки цель возвращается в центр (или в "плавающую" точку)
+                    // targetX/Y будут обновляться в цикле анимации
                 });
+
+                // ГЛАВНЫЙ ЦИКЛ АНИМАЦИИ (PHYSICS LOOP)
+                function animate() {
+                    const rect = footerContainer.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    if (!isHovering) {
+                        // Если мышка не наведена, вычисляем "плавающую" позицию
+                        const time = Date.now() * 0.001; // Время в секундах
+                        
+                        // Симуляция @keyframes floating средствами JS
+                        // Двигаемся вокруг центра по синусоиде
+                        // Смещение +/- 40px от центра
+                        const floatOffsetX = Math.sin(time) * 40; 
+                        const floatOffsetY = Math.cos(time * 0.8) * 30; // 0.8 для несинхронности
+
+                        targetX = centerX + floatOffsetX;
+                        targetY = centerY + floatOffsetY;
+                    }
+
+                    // LERP (Linear Interpolation) для плавного движения
+                    // current приближается к target на 10% каждый кадр
+                    // Это создает эффект плавности и инерции
+                    currentX += (targetX - currentX) * 0.1;
+                    currentY += (targetY - currentY) * 0.1;
+
+                    // Применяем позицию
+                    footerGlow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+
+                    requestAnimationFrame(animate);
+                }
+
+                // Запуск цикла
+                animate();
             }
 
-            // --- Word Reveal Logic (Точно как в index2.html: скролл, position absolute) ---
+            // --- Word Reveal Logic ---
             const word = document.querySelector('.word-reveal');
             const popup = document.getElementById('wordPopup');
             const popupImg = document.getElementById('wordPopupImg');
@@ -864,8 +935,6 @@
 
                 word.addEventListener('mouseenter', function() {
                     const rect = word.getBoundingClientRect();
-                    
-                    // Вычисляем координаты относительно ВСЕГО ДОКУМЕНТА (как в index2.html)
                     const centerX = rect.left + window.scrollX + (rect.width / 2);
                     const centerY = rect.top + window.scrollY + (rect.height / 2);
                     
@@ -877,15 +946,12 @@
                     }
 
                     const angle = randomRotation();
-                    
-                    // Анимация translate, как в index2.html (pop-эффект с поворотом)
                     popup.style.transform = `translate(-50%, -60%) scale(1) rotate(${angle}deg)`;
                     popup.classList.add('visible');
                 });
 
                 word.addEventListener('mouseleave', function() {
                     popup.classList.remove('visible');
-                    // Возврат в начальное состояние
                     popup.style.transform = `translate(-50%, -40%) scale(0.8) rotate(0deg)`;
                 });
             }
