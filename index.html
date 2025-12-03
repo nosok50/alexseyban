@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexsey Ban — Unity Engineer</title>
+    <title>Alexsey Banchuk - Unity Developer</title>
     
     <!-- --- OPEN GRAPH / SOCIAL SHARE TAGS --- -->
-    <meta property="og:title" content="Alexsey Ban — Unity Engineer">
+    <meta property="og:title" content="Alexsey Banchuk - Unity Developer">
     <meta property="og:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
     <meta property="og:image" content="preview.png">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://alexseyban.space">
+    <meta property="og:url" content="https://alexseyban.space"> 
     
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Alexsey Ban — Unity Engineer">
+    <meta name="twitter:title" content="Alexsey Banchuk - Unity Developer">
     <meta name="twitter:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
     <meta name="twitter:image" content="preview.png">
     
@@ -39,7 +39,7 @@
             overflow-x: hidden;
         }
 
-        /* --- Header with Progressive Blur --- */
+        /* --- Header Structure --- */
         header {
             position: fixed;
             top: 0;
@@ -50,36 +50,93 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            transition: all 0.3s ease;
             height: 140px; 
             background: transparent;
+            pointer-events: none; /* Let clicks pass through the blurred area */
+        }
+
+        /* --- Progressive Blur Implementation ("Shader-like") --- */
+        .blur-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
             pointer-events: none;
+        }
+
+        .blur-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translate3d(0, 0, 0); 
+        }
+
+        /* Layer 1: 1px blur. Плавно исчезает в ноль к самому низу (100%) */
+        .blur-layer:nth-child(1) {
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+            mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
+        }
+
+        /* Layer 2: 2px blur */
+        .blur-layer:nth-child(2) {
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%);
+        }
+
+        /* Layer 3: 4px blur */
+        .blur-layer:nth-child(3) {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%);
+        }
+
+        /* Layer 4: 8px blur */
+        .blur-layer:nth-child(4) {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
+        }
+
+        /* Layer 5: 12px blur */
+        .blur-layer:nth-child(5) {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%);
+        }
+
+        /* Layer 6: 16px blur */
+        .blur-layer:nth-child(6) {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%);
+        }
+        
+        .blur-noise {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.08;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
         }
 
         header .logo, header .header-contact {
             pointer-events: auto;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            background: rgba(245, 245, 245, 0.05); 
-            mask-image: linear-gradient(to bottom, 
-                rgba(0,0,0,1) 0%, 
-                rgba(0,0,0,1) 33.6%, 
-                rgba(0,0,0,0) 100%);
-            -webkit-mask-image: linear-gradient(to bottom, 
-                rgba(0,0,0,1) 0%, 
-                rgba(0,0,0,1) 33.6%, 
-                rgba(0,0,0,0) 100%);
-            z-index: -1;
-            transform: translate3d(0,0,0); 
         }
 
         .logo {
@@ -105,7 +162,6 @@
             border: 1px solid transparent;
         }
 
-        /* RESTORED: Image hover effect */
         .header-contact:hover, 
         .header-contact:active {
             background-image: url('Group 973.png');
@@ -190,7 +246,7 @@
             cursor: pointer;
             display: inline-block;
             transition: color 0.2s ease;
-            text-decoration: none; /* RESTORED: Removed underline */
+            text-decoration: none;
         }
         
         .word-reveal:hover {
@@ -316,7 +372,6 @@
             flex-direction: column;
         }
 
-        /* RESTORED: Featured card styling */
         .project-card.featured {
             grid-column: 1 / -1;
         }
@@ -333,9 +388,9 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* RESTORED: Featured image height */
+        /* --- Featured image height 270px on Desktop --- */
         .project-card.featured .project-image {
-            height: 400px;
+            height: 270px;
         }
 
         .project-content {
@@ -353,7 +408,6 @@
             margin-bottom: 1rem;
         }
 
-        /* RESTORED: Featured title size */
         .project-card.featured .project-title {
             font-size: 2rem;
         }
@@ -511,14 +565,13 @@
             .footer-email { font-size: 1.5rem; }
             
             /* --- FIX FOR IMAGE DISTORTION ON MOBILE --- */
-            /* На мобильных (ширина < 768px) мы убираем фиксированную высоту и задаем пропорции */
             .project-image {
                 height: auto;
-                aspect-ratio: 16/9; /* Сохраняем приятную пропорцию */
+                aspect-ratio: auto; 
             }
             .project-card.featured .project-image {
                 height: auto;
-                aspect-ratio: 16/9;
+                aspect-ratio: auto;
             }
         }
 
@@ -602,6 +655,18 @@
     </div>
     
     <header>
+        <!-- The Progressive Blur Stack -->
+        <div class="blur-container">
+            <div class="blur-layer"></div>
+            <div class="blur-layer"></div>
+            <div class="blur-layer"></div>
+            <div class="blur-layer"></div>
+            <div class="blur-layer"></div>
+            <div class="blur-layer"></div>
+            <!-- Optional: Noise to reduce banding, makes it look more "Shader/Material" like -->
+            <div class="blur-noise"></div>
+        </div>
+
         <img src="logo.png" alt="Logo" class="logo">
         <a href="mailto:alexsey.banchuk@gmail.com" class="header-contact">Contact</a>
     </header>
@@ -644,7 +709,7 @@
             <h2 class="section-title">My Projects</h2>
             <div class="projects-grid">
                 
-                <!-- Project 1: Eco City Inc. (RESTORED: Added class "featured") -->
+                <!-- Project 1: Eco City Inc. (Featured) -->
                 <div class="project-card featured" onclick="openProject('eco-city')">
                     <img src="EcoCityTitle.png" alt="Eco City Inc." class="project-image">
                     <div class="project-content">
@@ -778,7 +843,7 @@
                         The project architecture supports a full commercial stack, including cloud saves and custom local data encryption to protect against tampering. This is a fully independent development, spanning the cycle from writing shaders to release and support.
                     </p>
                     
-                    <!-- Added Buttons for YouTube and Telegram -->
+                    <!-- Buttons for YouTube and Telegram -->
                     <div class="project-buttons">
                         <a href="https://www.youtube.com/@nosok5050" target="_blank" class="project-btn">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
