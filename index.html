@@ -1,1167 +1,638 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexsey Ban – Unity</title>
+    <title>Alexsey Ban | Unity Engineer</title>
     
-    <!-- --- OPEN GRAPH / SOCIAL SHARE TAGS --- -->
-    <meta property="og:title" content="Alexsey Ban :)">
-    <meta property="og:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
-    <meta property="og:image" content="preview.png">
+    <!-- Meta Tags -->
+    <meta property="og:title" content="Alexsey Ban">
+    <meta property="og:description" content="Unity Engineer. I make games.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://alexseyban.space"> 
     
-    <!-- Twitter Card data -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Alexsey Ban :)">
-    <meta name="twitter:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
-    <meta name="twitter:image" content="preview.png">
-    
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: {
+                    sans: ['Manrope', 'sans-serif'],
+                    mono: ['Space Mono', 'monospace'],
+                },
+                extend: {
+                    animation: {
+                        'blob': 'blob 10s infinite',
+                        'blur-in-up': 'blurInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'dive-in': 'diveIn 0.8s cubic-bezier(0.6, 0, 0.2, 1) forwards',
+                        'dive-out': 'diveOut 0.8s cubic-bezier(0.6, 0, 0.2, 1) forwards',
+                        'appear-zoom': 'appearZoom 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        blurInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)', filter: 'blur(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
+                        },
+                        diveIn: {
+                            '0%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                            '50%': { opacity: '0.8' },
+                            '100%': { opacity: '0', transform: 'scale(1.5) translateY(-50px)' },
+                        },
+                        appearZoom: {
+                            '0%': { opacity: '0', transform: 'scale(0.95) translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        },
+                        diveOut: {
+                            '0%': { opacity: '1', transform: 'scale(1)' },
+                            '100%': { opacity: '0', transform: 'scale(0.9)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #161616; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Cursor hide logic for desktop */
+        @media (min-width: 768px) {
+            body { cursor: none; }
+            a, button, .cursor-pointer { cursor: none; }
         }
 
-        body {
-            font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-weight: 500;
-            background: #F5F5F5;
-            color: #161616;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* --- Header Structure --- */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1.5rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            height: 140px; 
-            background: transparent;
-            pointer-events: none; /* Let clicks pass through the blurred area */
-        }
-
-        /* --- Progressive Blur Implementation ("Shader-like") --- */
+        /* --- PROGRESSIVE BLUR STYLES --- */
         .blur-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             overflow: hidden;
             pointer-events: none;
         }
-
         .blur-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             transform: translate3d(0, 0, 0); 
         }
-
-        /* Layer 1: 1px blur. Плавно исчезает в ноль к самому низу (100%) */
-        .blur-layer:nth-child(1) {
-            backdrop-filter: blur(1px);
-            -webkit-backdrop-filter: blur(1px);
-            mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
-        }
-
-        /* Layer 2: 2px blur */
-        .blur-layer:nth-child(2) {
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
-            mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%);
-        }
-
-        /* Layer 3: 4px blur */
-        .blur-layer:nth-child(3) {
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%);
-        }
-
-        /* Layer 4: 8px blur */
-        .blur-layer:nth-child(4) {
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
-        }
-
-        /* Layer 5: 12px blur */
-        .blur-layer:nth-child(5) {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%);
-        }
-
-        /* Layer 6: 16px blur */
-        .blur-layer:nth-child(6) {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%);
-        }
+        /* Gradient Masks for "fading" blur */
+        .blur-layer:nth-child(1) { backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px); mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%); }
+        .blur-layer:nth-child(2) { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 85%); }
+        .blur-layer:nth-child(3) { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 70%); }
+        .blur-layer:nth-child(4) { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%); }
+        .blur-layer:nth-child(5) { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 15%, transparent 35%); }
+        .blur-layer:nth-child(6) { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 0%, transparent 15%); }
         
         .blur-noise {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.08;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.08; pointer-events: none;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
         }
 
-        header .logo, header .header-contact {
-            pointer-events: auto;
-        }
-
-        .logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        /* --- CONTACT BUTTON STYLES --- */
-        .header-contact {
-            background: #161616;
-            color: #F5F5F5;
-            padding: 0.75rem 2rem;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: transform 0.1s ease; 
-            transform-style: preserve-3d;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
-            border: 1px solid transparent;
-        }
-
-        .header-contact:hover, 
-        .header-contact:active {
-            background-image: url('Group 973.png');
-            background-color: transparent;
-            color: #FFFFFF;
-            border-color: transparent;
-            text-shadow: none;
-            transform: scale(1.05);
-            border-radius: 0; 
-        }
-
-        /* --- Hero Section --- */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 8rem 4rem 4rem;
-            background: #F5F5F5;
-            position: relative;
-            overflow: visible; 
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 1400px;
-            height: 1400px;
-            background: radial-gradient(circle, rgba(255, 234, 0, 0.6) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-            animation: moveGlow 15s ease-in-out infinite;
-            filter: blur(60px);
-        }
-
-        @keyframes moveGlow {
-            0% { top: -10%; right: -10%; }
-            25% { top: 10%; right: 40%; }
-            50% { top: 40%; right: 0%; }
-            75% { top: 20%; right: 50%; }
-            100% { top: -10%; right: -10%; }
-        }
-
-        .hero-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            z-index: 1;
-            position: relative;
-        }
-
-        .hero-content {
-            animation: fadeInUp 1s ease-out;
-            max-width: 100%;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 {
-            font-family: 'Manrope', sans-serif;
-            font-size: 7rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            color: #161616;
-            line-height: 112.9%;
-            max-width: 100%;
-        }
-
-        .greeting {
-            font-family: 'Manrope', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #161616;
-            margin-bottom: 0.5rem;
-        }
-
-        /* --- Interactive Word Reveal --- */
-        .word-reveal {
-            position: relative;
-            cursor: pointer;
-            display: inline-block;
-            transition: color 0.2s ease;
-            text-decoration: none;
-        }
-        
-        .word-reveal:hover {
-            color: #555;
-        }
-
-        .popup-img-container {
-            position: absolute; 
-            width: 300px;
-            height: auto;
-            pointer-events: none;
-            transform-origin: center center;
-            opacity: 0;
-            transform: translate(-50%, -40%) scale(0.8) rotate(0deg);
-            filter: blur(10px);
-            transition: 
-                opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1),
-                transform 0.3s cubic-bezier(0.19, 1, 0.22, 1),
-                filter 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-            z-index: 2000;
-            left: 0;
-            top: 0;
-        }
-
-        .popup-img-container.visible {
-            opacity: 1;
-            filter: blur(0px);
-        }
-
-        .popup-img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-            border: 3px solid #fff;
-        }
-
-        .cta-container {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .email-button {
-            background: #161616;
-            color: #F5F5F5;
-            padding: 1rem 2.5rem;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease, transform 0.1s ease;
-            display: inline-block;
-            width: fit-content;
-            transform-style: preserve-3d;
-        }
-
-        .email-button:hover {
-            background: #7B7B7B;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .social-links a {
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .social-links a:hover {
-            opacity: 1;
-            transform: translateY(-3px);
-        }
-
-        .social-links svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* --- Projects Section --- */
-        .projects-section {
-            padding: 6rem 4rem;
-            background: #F5F3F1;
-        }
-
-        .projects-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-family: 'Manrope', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 800;
-            text-align: left;
-            margin-bottom: 4rem;
-            color: #161616;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-        }
-
-        .project-card {
-            background: #F5F5F5;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease, transform 0.1s ease;
-            border: 1px solid rgba(22, 22, 22, 0.1);
-            cursor: pointer;
-            transform-style: preserve-3d;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-card.featured {
-            grid-column: 1 / -1;
-        }
-
-        .project-card:hover {
-            border-color: #161616;
-        }
-
-        .project-image {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            object-position: left center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* --- Featured image height 270px on Desktop --- */
-        .project-card.featured .project-image {
-            height: 270px;
-        }
-
-        .project-content {
-            padding: 2rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-title {
-            font-family: 'Manrope', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #161616;
-            margin-bottom: 1rem;
-        }
-
-        .project-card.featured .project-title {
-            font-size: 2rem;
-        }
-
-        .project-description {
-            color: #4A4A4A;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: auto;
-        }
-
-        .tag {
-            background: rgba(22, 22, 22, 0.05);
-            color: #161616;
-            padding: 0.3rem 1rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(22, 22, 22, 0.1);
-        }
-
-        .tag.red-tag {
-            background: #FF3B30;
-            color: #F5F5F5;
-            border-color: #FF3B30;
-        }
-
-        .project-screenshots {
-            display: flex;
-            gap: 0.8rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .screenshot-thumb {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid rgba(22, 22, 22, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .screenshot-thumb:hover {
-            border-color: #161616;
-            transform: scale(1.1);
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 4rem 2rem 2rem 2rem; 
-            background: #F5F3F1;
-        }
-
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: #F5F5F5;
-            border: 2px solid #D0D0D0;
-            border-radius: 50px;
-            padding: 2rem 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            z-index: 1; 
-        }
-
-        .footer-glow {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255, 234, 0, 0.5) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: -1;
-            top: 0;
-            left: 0;
-            opacity: 0; 
-            filter: blur(40px);
-            transition: opacity 0.5s ease;
-            transform: translate(-50%, -50%); 
-        }
-        
-        .footer-glow.active {
-            opacity: 0.8;
-        }
-
-        .footer-email {
-            font-size: 2rem;
-            color: #161616;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-            text-decoration: none;
-        }
-
-        .footer-email:hover {
-            color: #555;
-        }
-
-        .footer-socials {
-            display: flex;
-            gap: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer-socials a {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .footer-socials a:hover {
-            opacity: 1;
-            transform: translateY(-3px);
-        }
-
-        .footer-socials svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* --- Modal & Responsive --- */
-        @media (max-width: 1024px) {
-            h1 { font-size: 4rem; }
-            .greeting { font-size: 1.5rem; }
-            header { padding: 1.5rem 2rem; }
-            .hero { padding: 6rem 2rem 4rem; }
-            .projects-section { padding: 4rem 2rem; }
-        }
-
-        @media (max-width: 768px) {
-            /* Keep single column on mobile, featured behavior collapses naturally */
-            .projects-grid { grid-template-columns: 1fr; }
-            .project-card.featured { grid-column: 1; } /* Reset column span on mobile */
-            h1 { font-size: 2.5rem; }
-            .greeting { font-size: 1.2rem; }
-            .section-title { font-size: 2rem; }
-            .cta-container { flex-direction: column; align-items: flex-start; }
-            .footer-container { flex-direction: column; gap: 1.5rem; text-align: center; }
-            .footer-email { font-size: 1.5rem; }
-            
-            /* --- FIX FOR IMAGE DISTORTION ON MOBILE --- */
-            .project-image {
-                height: auto;
-                aspect-ratio: auto; 
-            }
-            .project-card.featured .project-image {
-                height: auto;
-                aspect-ratio: auto;
-            }
-        }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(22, 22, 22, 0.95); z-index: 2000; align-items: center; justify-content: center; padding: 2rem; }
-        .modal.active { display: flex; }
-        .modal-content { max-width: 90%; max-height: 90%; position: relative; animation: modalZoom 0.3s ease-out; }
-        @keyframes modalZoom { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-image { width: 100%; height: auto; max-height: 90vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); object-fit: contain; }
-        .modal-close { position: absolute; top: -50px; right: 0; background: #F5F5F5; color: #161616; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
-        .modal-close:hover { background: #161616; color: #F5F5F5; transform: rotate(90deg); }
-
-        .project-detail { display: none; min-height: 100vh; background: #F5F5F5; padding-top: 100px; }
-        .project-detail.active { display: block; }
-        .back-button { max-width: 1400px; margin: 0 auto; padding: 2rem 4rem 1rem; }
-        .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: #161616; color: #F5F5F5; padding: 0.75rem 1.5rem; border-radius: 25px; text-decoration: none; font-size: 1rem; transition: all 0.3s ease, transform 0.1s ease; border: none; cursor: pointer; transform-style: preserve-3d; }
-        .back-btn:hover { background: #7B7B7B; }
-        .project-detail-content { max-width: 1400px; margin: 0 auto; padding: 2rem 4rem; padding-bottom: 6rem; }
-        .project-header { display: grid; grid-template-columns: 200px 1fr; gap: 3rem; margin-bottom: 3rem; align-items: start; }
-        .project-icon { width: 200px; height: 200px; border-radius: 20px; object-fit: cover; box-shadow: 0 10px 30px rgba(22, 22, 22, 0.15); border: 1px solid rgba(0,0,0,0.1); }
-        .project-info h2 { font-family: 'Manrope', sans-serif; font-size: 3rem; font-weight: 800; color: #161616; margin-bottom: 1rem; }
-        .project-info .project-description { font-size: 1.2rem; color: #4A4A4A; line-height: 1.8; margin-bottom: 2rem; }
-        .detail-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
-        .detail-tags .tag { font-size: 1rem; padding: 0.5rem 1.5rem; }
-        .screenshots-section h3 { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 700; color: #161616; margin-bottom: 2rem; }
-        .screenshots-list { display: flex; flex-direction: column; gap: 2rem; }
-        .screenshot-full { width: 100%; height: auto; object-fit: cover; border-radius: 12px; border: 2px solid rgba(22, 22, 22, 0.1); cursor: pointer; transition: all 0.3s ease; }
-        .screenshot-full:hover { transform: scale(1.01); box-shadow: 0 10px 30px rgba(22, 22, 22, 0.15); border-color: #161616; }
-
-        .project-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .project-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            background: #161616;
-            color: #F5F5F5;
-            padding: 0.8rem 2rem;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-        .project-btn:hover {
-            background: #555;
-            transform: translateY(-2px);
-        }
-        .project-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #F5F5F5;
-        }
-        
-        @media (max-width: 768px) {
-            .project-header { grid-template-columns: 1fr; gap: 2rem; }
-            .project-icon { width: 120px; height: 120px; }
-            .project-info h2 { font-size: 2rem; }
-            .back-button, .project-detail-content { padding: 2rem; }
-            .project-buttons { flex-direction: column; width: 100%; }
-            .project-btn { width: 100%; justify-content: center; }
-        }
-
+        .no-scroll { overflow: hidden; }
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-    <!-- Popup for "games" hover -->
-    <div class="popup-img-container" id="wordPopup">
-        <img id="wordPopupImg" src="" alt="Popup">
-    </div>
+    <script type="text/babel" data-presets="react">
+        const { useState, useEffect, useRef } = React;
 
-    <!-- Image Modal -->
-    <div class="modal" id="imageModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <img src="" alt="Preview" class="modal-image" id="modalImage">
-        </div>
-    </div>
-    
-    <header>
-        <!-- The Progressive Blur Stack -->
-        <div class="blur-container">
-            <div class="blur-layer"></div>
-            <div class="blur-layer"></div>
-            <div class="blur-layer"></div>
-            <div class="blur-layer"></div>
-            <div class="blur-layer"></div>
-            <div class="blur-layer"></div>
-            <!-- Optional: Noise to reduce banding, makes it look more "Shader/Material" like -->
-            <div class="blur-noise"></div>
-        </div>
+        // --- ICONS ---
+        const IconArrowRight = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        );
+        const IconGithub = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        );
+        const IconLinkedin = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        );
+        const IconSend = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        );
+        const IconExternalLink = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        );
+        const IconChevronLeft = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="15 18 9 12 15 6"></polyline></svg>
+        );
+        const IconPlay = ({ className, fill }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill || "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        );
 
-        <img src="logo.png" alt="Logo" class="logo">
-        <a href="mailto:alexsey.banchuk@gmail.com" class="header-contact">Contact</a>
-    </header>
+        // --- APP COMPONENT ---
+        const PortfolioApp = () => {
+          const [view, setView] = useState('home');
+          const [activeProject, setActiveProject] = useState(null);
+          const [loading, setLoading] = useState(true);
+          const [transitionStage, setTransitionStage] = useState('idle'); 
+          const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+          const [cursorHovered, setCursorHovered] = useState(false);
+          
+          // --- ACTUAL DATA FROM OLD SITE ---
+          const projects = [
+            {
+              id: 'eco-city',
+              title: 'Eco City Inc.',
+              subtitle: 'Mobile Economic Strategy',
+              logo: 'EcoCityLogo.png',
+              image: 'EcoCityTitle.png',
+              tags: ['Solo Project', 'Unity 6', 'Procedural Generation', 'A* Pathfinding', 'IAP', 'Ads', 'Cloud Saves'],
+              description: 'Mobile economic strategy based on Unity 6, gameplay built around creating complex production chains. The technical foundation relies on procedural generation via Perlin noise and logistics using weighted A* pathfinding algorithms.',
+              fullDescription: 'The project architecture supports a full commercial stack, including cloud saves and custom local data encryption to protect against tampering. This is a fully independent development, spanning the cycle from writing shaders to release and support.',
+              screenshots: ['EcoCityScreen1.png', 'EcoCityScreen2.png', 'EcoCityScreen3.png', 'EcoCityScreen4.png'],
+              links: { youtube: 'https://www.youtube.com/@nosok5050', telegram: 'https://t.me/nosok5050' }
+            },
+            {
+              id: 'wordly',
+              title: 'Wordly',
+              subtitle: 'Logic Puzzle',
+              logo: 'WordsLogo.png',
+              image: 'WordsTitle.png',
+              tags: ['Mobile', 'Cryptography', 'DOTween', 'Modular Architecture'],
+              description: 'Logic puzzle with an extensive dictionary of 60,000 positions. The key feature lies in a non-standard offline encryption system allowing players to exchange guessed words between devices without server or internet involvement.',
+              fullDescription: 'The implemented algorithm generates unique keys, allowing players to exchange guessed words between devices without server or internet involvement. The project serves as a technical demonstration of complex UI architecture, DOTween animations, and algorithmic logic outside standard game loops.',
+              screenshots: ['WordsScreen1.png', 'WordsScreen2.png', 'WordsScreen3.png', 'WordsScreen4.png'],
+              links: {} 
+            },
+            {
+              id: 'rocky-quest',
+              title: 'Rocky Quest',
+              subtitle: 'Hybrid Casual Strategy',
+              logo: 'RockyQuestLogo.png',
+              image: 'RockyQuestTitle.png',
+              tags: ['3D', 'Hybrid Casual', 'AI Pathfinding', 'Modular Building System', 'IAP', 'Ads'],
+              description: 'Hybrid casual project combining resource mining mechanics and Tower Defense. Development was conducted in a team format, requiring synchronization of economic upgrade cycles with active combat phases.',
+              fullDescription: 'The technical stack included a modular base building system, AI enemy navigation logic, and IAP monetization integration. The application passed closed testing stages for performance debugging and core mechanic balancing.',
+              screenshots: ['RockyQuestScreen1.png', 'RockyQuestScreen2.png', 'RockyQuestScreen3.png', 'RockyQuestScreen4.png', 'RockyQuestScreen5.png'],
+              links: {}
+            },
+            {
+              id: 'drilling-app',
+              title: 'Drilling Operations App',
+              subtitle: 'Industrial IoT Monitor',
+              logo: 'DrillLogo.png',
+              image: 'Drill.png',
+              tags: ['3D', 'NDA', 'IoT Integration', 'Real-time Telemetry'],
+              description: 'Application for monitoring industrial drilling rigs. The program displays a 3D copy of the drill, synchronized in real-time with IoT sensors on the equipment.',
+              fullDescription: 'If a part overheats or requires replacement, the system immediately highlights the problem zone and issues a warning. An engineer can virtually disassemble the device on screen to study the condition of each node in detail and prevent breakdown before it occurs.',
+              screenshots: ['DrillScreen1.png'],
+              links: {}
+            }
+          ];
 
-    <!-- Main Hero -->
-    <section class="hero" id="mainPage">
-        <div class="hero-container">
-            <div class="hero-content">
-                <p class="greeting">Hello, I am</p>
-                <h1>Alexsey, Unity engineer.<br>I make 
-                    <span class="word-reveal" data-img="secret.png">games</span>.
+          useEffect(() => {
+            const moveCursor = (e) => { setCursorPos({ x: e.clientX, y: e.clientY }); };
+            window.addEventListener('mousemove', moveCursor);
+            return () => window.removeEventListener('mousemove', moveCursor);
+          }, []);
+
+          useEffect(() => {
+            const timer = setTimeout(() => setLoading(false), 1500);
+            return () => clearTimeout(timer);
+          }, []);
+
+          const handleProjectClick = (project) => {
+            setTransitionStage('diving-in');
+            setTimeout(() => {
+                setActiveProject(project);
+                setView('project');
+                setTransitionStage('idle'); 
+                window.scrollTo(0,0);
+            }, 600);
+          };
+
+          const handleBack = () => {
+             setTransitionStage('diving-out');
+             setTimeout(() => {
+                setView('home');
+                setActiveProject(null);
+                setTransitionStage('idle');
+             }, 600);
+          };
+          
+          if (loading) return <Preloader />;
+
+          return (
+            <div className={`min-h-screen bg-[#F5F5F5] text-[#161616] font-sans overflow-x-hidden selection:bg-black selection:text-white`}>
+              
+              {/* NOISE & CURSOR */}
+              <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] mix-blend-overlay" 
+                   style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+              </div>
+
+              <div className="fixed top-0 left-0 w-6 h-6 border-2 border-[#161616] rounded-full pointer-events-none z-[9999] hidden md:block transition-all duration-150 ease-out mix-blend-difference"
+                style={{ transform: `translate(${cursorPos.x - 12}px, ${cursorPos.y - 12}px) scale(${cursorHovered ? 2.5 : 1})`, backgroundColor: cursorHovered ? '#fff' : 'transparent' }} />
+              <div className="fixed top-0 left-0 w-2 h-2 bg-[#161616] rounded-full pointer-events-none z-[9999] hidden md:block transition-transform duration-75 ease-out"
+                style={{ transform: `translate(${cursorPos.x - 4}px, ${cursorPos.y - 4}px)` }} />
+
+              <Header view={view} onBack={handleBack} setCursorHovered={setCursorHovered} />
+
+              <main className="relative z-10">
+                {view === 'home' ? (
+                  <div className={`${transitionStage === 'diving-in' ? 'animate-dive-in pointer-events-none' : 'animate-appear-zoom'}`}>
+                    <Hero setCursorHovered={setCursorHovered} />
+                    <ProjectStack 
+                      projects={projects} 
+                      onProjectClick={handleProjectClick} 
+                      setCursorHovered={setCursorHovered}
+                    />
+                    <Footer setCursorHovered={setCursorHovered} />
+                  </div>
+                ) : (
+                  <div className={`${transitionStage === 'diving-out' ? 'animate-dive-out pointer-events-none' : 'animate-appear-zoom'}`}>
+                    <ProjectDetail 
+                        project={activeProject} 
+                        setCursorHovered={setCursorHovered}
+                    />
+                  </div>
+                )}
+              </main>
+            </div>
+          );
+        };
+
+        const Preloader = () => (
+          <div className="fixed inset-0 bg-[#161616] z-[9999] flex items-center justify-center text-[#F5F5F5] flex-col">
+            <div className="text-4xl md:text-6xl font-black tracking-tighter animate-pulse">ALEXSEY</div>
+            <div className="mt-4 text-xs md:text-sm font-mono opacity-50">INITIALIZING SYSTEM...</div>
+          </div>
+        );
+
+        // --- HEADER ---
+        const Header = ({ view, onBack, setCursorHovered }) => {
+            return (
+                <header className="fixed top-0 left-0 right-0 h-[140px] z-40 flex items-center px-6 md:px-12 pointer-events-none">
+                    <div className="blur-container">
+                        <div className="blur-layer"></div>
+                        <div className="blur-layer"></div>
+                        <div className="blur-layer"></div>
+                        <div className="blur-layer"></div>
+                        <div className="blur-layer"></div>
+                        <div className="blur-layer"></div>
+                        <div className="blur-noise"></div>
+                    </div>
+
+                    <div className="w-full flex justify-between items-center pointer-events-auto">
+                        {/* ANIMATED LEFT CONTAINER */}
+                        <div className="relative h-10 w-48 overflow-hidden"> 
+                            {/* LOGO STATE */}
+                            <div 
+                                className={`absolute inset-0 flex items-center transition-all duration-500 ease-out transform ${
+                                    view === 'home' ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+                                }`}
+                            >
+                                <div 
+                                    className="cursor-pointer font-bold text-xl tracking-tighter hover:opacity-50 transition-opacity"
+                                    onClick={() => window.location.reload()}
+                                    onMouseEnter={() => setCursorHovered(true)}
+                                    onMouseLeave={() => setCursorHovered(false)}
+                                >
+                                    ALEXSEY.
+                                </div>
+                            </div>
+
+                            {/* BACK BUTTON STATE */}
+                            <div 
+                                className={`absolute inset-0 flex items-center transition-all duration-500 ease-out transform ${
+                                    view === 'project' ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+                                }`}
+                            >
+                                <button 
+                                    onClick={onBack}
+                                    className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-gray-600 transition-colors group"
+                                    onMouseEnter={() => setCursorHovered(true)}
+                                    onMouseLeave={() => setCursorHovered(false)}
+                                >
+                                    <div className="bg-black text-white rounded-full p-1 group-hover:scale-110 transition-transform">
+                                        <IconChevronLeft className="w-4 h-4" />
+                                    </div>
+                                    <span>All Projects</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* RIGHT SIDE */}
+                        <div 
+                            className={`transition-all duration-500 ease-out ${
+                                view === 'home' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+                            }`}
+                        >
+                            <a href="mailto:alexsey.banchuk@gmail.com" 
+                            className="bg-white/50 backdrop-blur-md border border-gray-200 px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-[#161616] hover:text-white transition-all duration-300"
+                            onMouseEnter={() => setCursorHovered(true)}
+                            onMouseLeave={() => setCursorHovered(false)}>
+                            Get in touch
+                            </a>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        const Hero = ({ setCursorHovered }) => {
+          return (
+            <section className="min-h-[90vh] flex flex-col justify-center px-6 md:px-12 pt-32 relative overflow-hidden">
+              <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-yellow-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
+              <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
+
+              <div className="max-w-7xl mx-auto w-full z-10">
+                <p className="text-xl md:text-2xl font-medium mb-4 opacity-0 animate-blur-in-up" style={{animationDelay: '0.1s'}}>
+                  Hello, I am
+                </p>
+                <h1 className="text-[13vw] leading-[0.85] font-black tracking-tighter text-[#161616] mb-8 select-none">
+                  <div className="overflow-hidden">
+                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.2s'}}>UNITY</span>
+                  </div>
+                  <div className="overflow-hidden">
+                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.35s'}}>ENGINEER</span>
+                  </div>
                 </h1>
-                <div class="cta-container">
-                    <a href="mailto:alexsey.banchuk@gmail.com" class="email-button">Send Email</a>
-                    <div class="social-links">
-                        <a href="https://github.com/nosok50" target="_blank" title="GitHub">
-                            <svg viewBox="0 0 24 24" fill="#161616">
-                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.linkedin.com/in/alexsey-banchuk/" target="_blank" title="LinkedIn">
-                            <svg viewBox="0 0 24 24" fill="#161616">
-                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                            </svg>
-                        </a>
-                        <a href="https://t.me/alexsey_banch" target="_blank" title="Telegram">
-                            <svg viewBox="0 0 24 24" fill="#161616">
-                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Grid -->
-    <section class="projects-section" id="projectsSection">
-        <div class="projects-container">
-            <h2 class="section-title">My Projects</h2>
-            <div class="projects-grid">
                 
-                <!-- Project 1: Eco City Inc. (Featured) -->
-                <div class="project-card featured" onclick="openProject('eco-city')">
-                    <img src="EcoCityTitle.png" alt="Eco City Inc." class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">Eco City Inc.</h3>
-                        <p class="project-description">
-                            Mobile economic strategy based on Unity 6, gameplay built around creating complex production chains. The technical foundation relies on procedural generation via Perlin noise and logistics using weighted A* pathfinding algorithms. The project architecture supports a full commercial stack, including cloud saves and custom local data encryption to protect against tampering. This is a fully independent development, spanning the cycle from writing shaders to release and support.
-                        </p>
-                        <div class="project-tags">
-                            <span class="tag red-tag">Solo Project</span>
-                            <span class="tag">Unity 6</span>
-                            <span class="tag">Procedural Generation</span>
-                            <span class="tag">A* Pathfinding</span>
-                            <span class="tag">IAP</span>
-                            <span class="tag">Ads</span>
-                            <span class="tag">Cloud Saves</span>
-                        </div>
-                        <div class="project-screenshots">
-                            <img src="EcoCityScreen1.png" alt="Screen 1" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="EcoCityScreen2.png" alt="Screen 2" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="EcoCityScreen3.png" alt="Screen 3" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                        </div>
-                    </div>
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-8 opacity-0 animate-blur-in-up" style={{animationDelay: '0.6s'}}>
+                  <p className="max-w-xl text-lg md:text-xl text-gray-600 leading-relaxed">
+                    I craft immersive interactive experiences and <span className="relative inline-block font-bold text-black border-b-2 border-black group cursor-help" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
+                      games
+                      <img src="secret.png" alt="" className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rotate-3 scale-0 group-hover:scale-100 origin-bottom" onError={(e) => e.target.style.display='none'} />
+                    </span>. 
+                    Explore my portfolio and projects.
+                  </p>
+                  
+                  <div className="flex gap-4">
+                     <SocialLink href="https://github.com/nosok50" icon={<IconGithub />} setCursorHovered={setCursorHovered} />
+                     <SocialLink href="https://www.linkedin.com/in/alexsey-banchuk/" icon={<IconLinkedin />} setCursorHovered={setCursorHovered} />
+                     <SocialLink href="https://t.me/alexsey_banch" icon={<IconSend />} setCursorHovered={setCursorHovered} />
+                  </div>
                 </div>
+              </div>
+              
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-30">
+                <IconArrowRight className="rotate-90 w-6 h-6" />
+              </div>
+            </section>
+          );
+        };
 
-                <!-- Project 2: Wordly -->
-                <div class="project-card" onclick="openProject('wordly')">
-                    <img src="WordsTitle.png" alt="Wordly" class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">Wordly</h3>
-                        <p class="project-description">
-                            Logic puzzle with an extensive dictionary of 60,000 positions. The key feature lies in a non-standard offline encryption system. The implemented algorithm generates unique keys, allowing players to exchange guessed words between devices without server or internet involvement. The project serves as a technical demonstration of complex UI architecture, DOTween animations, and algorithmic logic outside standard game loops.
-                        </p>
-                        <div class="project-tags">
-                            <span class="tag">Mobile</span>
-                            <span class="tag">Cryptography</span>
-                            <span class="tag">DOTween</span>
-                            <span class="tag">Modular Architecture</span>
-                        </div>
-                        <div class="project-screenshots">
-                            <img src="WordsScreen1.png" alt="Screen 1" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="WordsScreen2.png" alt="Screen 2" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="WordsScreen3.png" alt="Screen 3" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                        </div>
-                    </div>
-                </div>
+        const SocialLink = ({ href, icon, setCursorHovered }) => (
+          <a href={href} target="_blank" rel="noreferrer"
+             className="w-12 h-12 flex items-center justify-center border border-[#161616]/20 rounded-full hover:bg-[#161616] hover:text-white transition-all duration-300"
+             onMouseEnter={() => setCursorHovered(true)}
+             onMouseLeave={() => setCursorHovered(false)}>
+            {React.cloneElement(icon, { className: "w-5 h-5" })}
+          </a>
+        );
 
-                <!-- Project 3: Rocky Quest -->
-                <div class="project-card" onclick="openProject('rocky-quest')">
-                    <img src="RockyQuestTitle.png" alt="Rocky Quest" class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">Rocky Quest</h3>
-                        <p class="project-description">
-                            Hybrid casual project combining resource mining mechanics and Tower Defense. Development was conducted in a team format, requiring synchronization of economic upgrade cycles with active combat phases. The technical stack included a modular base building system, AI enemy navigation logic, and IAP monetization integration. The application passed closed testing stages for performance debugging and core mechanic balancing.
-                        </p>
-                        <div class="project-tags">
-                            <span class="tag">3D</span>
-                            <span class="tag">Hybrid Casual</span>
-                            <span class="tag">AI Pathfinding</span>
-                            <span class="tag">Modular Building System</span>
-                            <span class="tag">IAP</span>
-                            <span class="tag">Ads</span>
-                        </div>
-                        <div class="project-screenshots">
-                            <img src="RockyQuestScreen1.png" alt="Screen 1" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="RockyQuestScreen2.png" alt="Screen 2" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                            <img src="RockyQuestScreen3.png" alt="Screen 3" class="screenshot-thumb" onclick="event.stopPropagation(); openModal(this.src)">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 4: Drilling Operations App -->
-                <div class="project-card" onclick="openProject('drilling-app')">
-                    <img src="Drill.png" alt="Drilling Operations" class="project-image">
-                    <div class="project-content">
-                        <h3 class="project-title">Drilling Operations App (NDA)</h3>
-                        <p class="project-description">
-                            Application for monitoring industrial drilling rigs. The program displays a 3D copy of the drill, synchronized in real-time with IoT sensors on the equipment. If a part overheats or requires replacement, the system immediately highlights the problem zone and issues a warning. An engineer can virtually disassemble the device on screen to study the condition of each node in detail and prevent breakdown before it occurs.
-                        </p>
-                        <div class="project-tags">
-                            <span class="tag">3D</span>
-                            <span class="tag red-tag">NDA</span>
-                            <span class="tag">IoT Integration</span>
-                            <span class="tag">Real-time Telemetry</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-glow"></div>
+        // --- STYLISH TAG COMPONENT ---
+        const Tag = ({ text }) => {
+            // Logic to highlight key tags based on your old site preferences (Solo, NDA are red)
+            const isRed = ['Solo', 'NDA', 'Unity 6', 'Unity', 'IAP'].some(key => text.includes(key));
             
-            <a href="mailto:alexsey.banchuk@gmail.com" class="footer-email">alexsey.banchuk@gmail.com</a>
-            <div class="footer-socials">
-                <a href="https://github.com/nosok50" target="_blank" title="GitHub">
-                    <svg viewBox="0 0 24 24" fill="#161616">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                    </svg>
-                </a>
-                <a href="https://www.linkedin.com/in/alexsey-banchuk/" target="_blank" title="LinkedIn">
-                    <svg viewBox="0 0 24 24" fill="#161616">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                </a>
-                <a href="https://t.me/alexsey_banch" target="_blank" title="Telegram">
-                    <svg viewBox="0 0 24 24" fill="#161616">
-                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </footer>
+            return (
+                <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase backdrop-blur-md border ${
+                    isRed 
+                    ? 'border-red-500/30 bg-red-500/10 text-red-600 font-bold shadow-[0_0_10px_rgba(239,68,68,0.2)]' 
+                    : 'border-white/30 text-white/90 bg-black/10' 
+                }`}>
+                    {text}
+                </span>
+            );
+        };
+        
+        const TagDark = ({ text }) => {
+            const isRed = ['Solo', 'NDA', 'Unity 6', 'Unity', 'IAP'].some(key => text.includes(key));
+            return (
+                <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase border ${
+                    isRed 
+                    ? 'border-red-500/30 bg-red-50 text-red-600 font-bold' 
+                    : 'border-gray-200 text-gray-500 bg-white'
+                }`}>
+                    {text}
+                </span>
+            );
+        };
 
-    <!-- DETAILED PROJECT VIEWS -->
-
-    <!-- Project 1 Detail: Eco City Inc. -->
-    <div class="project-detail" id="eco-city">
-        <div class="back-button"><button class="back-btn" onclick="backToMain()">← Back to Projects</button></div>
-        <div class="project-detail-content">
-            <div class="project-header">
-                <img src="EcoCityLogo.png" alt="Eco City Logo" class="project-icon">
-                <div class="project-info">
-                    <h2>Eco City Inc.</h2>
-                    <p class="project-description">
-                        Mobile economic strategy based on Unity 6, gameplay built around creating complex production chains. The technical foundation relies on procedural generation via Perlin noise and logistics using weighted A* pathfinding algorithms. 
-                        <br><br>
-                        The project architecture supports a full commercial stack, including cloud saves and custom local data encryption to protect against tampering. This is a fully independent development, spanning the cycle from writing shaders to release and support.
-                    </p>
-                    
-                    <!-- Buttons for YouTube and Telegram -->
-                    <div class="project-buttons">
-                        <a href="https://www.youtube.com/@nosok5050" target="_blank" class="project-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            YouTube
-                        </a>
-                        <a href="https://t.me/nosok5050" target="_blank" class="project-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>
-                            Telegram
-                        </a>
-                    </div>
-
-                    <div class="detail-tags">
-                        <span class="tag red-tag">Solo Project</span>
-                        <span class="tag">Unity 6</span>
-                        <span class="tag">Procedural Generation</span>
-                        <span class="tag">A* Pathfinding</span>
-                        <span class="tag">IAP</span>
-                        <span class="tag">Ads</span>
-                        <span class="tag">Cloud Saves</span>
-                    </div>
+        const ProjectStack = ({ projects, onProjectClick, setCursorHovered }) => {
+          return (
+            <section className="px-6 md:px-12 py-20 bg-white rounded-t-[3rem] relative z-20 shadow-[0_-50px_100px_rgba(0,0,0,0.05)]">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex justify-between items-end mb-24 border-b border-gray-100 pb-8">
+                  <h2 className="text-5xl md:text-7xl font-bold tracking-tighter">Selected<br/>Works</h2>
+                  <span className="hidden md:block text-gray-400 font-mono text-sm">(2023 — 2025)</span>
                 </div>
-            </div>
-            <div class="screenshots-section">
-                <h3>Screenshots</h3>
-                <div class="screenshots-list">
-                    <img src="EcoCityScreen1.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="EcoCityScreen2.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="EcoCityScreen3.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="EcoCityScreen4.png" class="screenshot-full" onclick="openModal(this.src)">
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Project 2 Detail: Wordly -->
-    <div class="project-detail" id="wordly">
-        <div class="back-button"><button class="back-btn" onclick="backToMain()">← Back to Projects</button></div>
-        <div class="project-detail-content">
-            <div class="project-header">
-                <img src="WordsLogo.png" alt="Wordly Logo" class="project-icon">
-                <div class="project-info">
-                    <h2>Wordly</h2>
-                    <p class="project-description">
-                        Logic puzzle with an extensive dictionary of 60,000 positions. The key feature lies in a non-standard offline encryption system. 
-                        <br><br>
-                        The implemented algorithm generates unique keys, allowing players to exchange guessed words between devices without server or internet involvement. The project serves as a technical demonstration of complex UI architecture, DOTween animations, and algorithmic logic outside standard game loops.
-                    </p>
-                    <div class="detail-tags">
-                        <span class="tag">Mobile</span>
-                        <span class="tag">Cryptography</span>
-                        <span class="tag">DOTween</span>
-                        <span class="tag">Modular Architecture</span>
-                    </div>
-                </div>
-            </div>
-            <div class="screenshots-section">
-                <h3>Screenshots</h3>
-                <div class="screenshots-list">
-                    <img src="WordsScreen1.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="WordsScreen2.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="WordsScreen3.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="WordsScreen4.png" class="screenshot-full" onclick="openModal(this.src)">
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Project 3 Detail: Rocky Quest -->
-    <div class="project-detail" id="rocky-quest">
-        <div class="back-button"><button class="back-btn" onclick="backToMain()">← Back to Projects</button></div>
-        <div class="project-detail-content">
-            <div class="project-header">
-                <img src="RockyQuestLogo.png" alt="Rocky Quest Logo" class="project-icon">
-                <div class="project-info">
-                    <h2>Rocky Quest</h2>
-                    <p class="project-description">
-                        Hybrid casual project combining resource mining mechanics and Tower Defense. Development was conducted in a team format, requiring synchronization of economic upgrade cycles with active combat phases. 
-                        <br><br>
-                        The technical stack included a modular base building system, AI enemy navigation logic, and IAP monetization integration. The application passed closed testing stages for performance debugging and core mechanic balancing.
-                    </p>
-                    <div class="detail-tags">
-                        <span class="tag">3D</span>
-                        <span class="tag">Hybrid Casual</span>
-                        <span class="tag">AI Pathfinding</span>
-                        <span class="tag">Modular Building System</span>
-                        <span class="tag">IAP</span>
-                        <span class="tag">Ads</span>
-                    </div>
-                </div>
-            </div>
-            <div class="screenshots-section">
-                <h3>Screenshots</h3>
-                <div class="screenshots-list">
-                    <img src="RockyQuestScreen1.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="RockyQuestScreen2.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="RockyQuestScreen3.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="RockyQuestScreen4.png" class="screenshot-full" onclick="openModal(this.src)">
-                    <img src="RockyQuestScreen5.png" class="screenshot-full" onclick="openModal(this.src)">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Project 4 Detail: Drilling Operations App -->
-    <div class="project-detail" id="drilling-app">
-        <div class="back-button"><button class="back-btn" onclick="backToMain()">← Back to Projects</button></div>
-        <div class="project-detail-content">
-            <div class="project-header">
-                <img src="DrillLogo.png" alt="Drilling App Logo" class="project-icon">
-                <div class="project-info">
-                    <h2>Drilling Operations App (NDA)</h2>
-                    <p class="project-description">
-                        Application for monitoring industrial drilling rigs. The program displays a 3D copy of the drill, synchronized in real-time with IoT sensors on the equipment. 
-                        <br><br>
-                        If a part overheats or requires replacement, the system immediately highlights the problem zone and issues a warning. An engineer can virtually disassemble the device on screen to study the condition of each node in detail and prevent breakdown before it occurs.
-                    </p>
-                    <div class="detail-tags">
-                        <span class="tag">3D</span>
-                        <span class="tag red-tag">NDA</span>
-                        <span class="tag">IoT Integration</span>
-                        <span class="tag">Real-time Telemetry</span>
-                    </div>
-                </div>
-            </div>
-            <div class="screenshots-section">
-                <h3>Screenshots</h3>
-                <div class="screenshots-list">
-                    <img src="DrillScreen1.png" class="screenshot-full" onclick="openModal(this.src)">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // --- PHYSICS BASED FOOTER LOGIC ---
-            const footerContainer = document.querySelector('.footer-container');
-            const footerGlow = document.querySelector('.footer-glow');
-
-            if (footerContainer && footerGlow) {
-                let currentX = 0, currentY = 0; 
-                let targetX = 0, targetY = 0;   
-                let isHovering = false;         
-                let containerRect = footerContainer.getBoundingClientRect(); 
-                
-                // Initialize in center
-                currentX = containerRect.width / 2;
-                currentY = containerRect.height / 2;
-                targetX = currentX;
-                targetY = currentY;
-
-                footerGlow.classList.add('active');
-
-                window.addEventListener('resize', () => {
-                    containerRect = footerContainer.getBoundingClientRect();
-                    if(!isHovering) {
-                        currentX = containerRect.width / 2;
-                        currentY = containerRect.height / 2;
-                    }
-                });
-
-                footerContainer.addEventListener('mousemove', (e) => {
-                    isHovering = true;
-                    const rect = footerContainer.getBoundingClientRect();
-                    targetX = e.clientX - rect.left;
-                    targetY = e.clientY - rect.top;
-                });
-
-                footerContainer.addEventListener('mouseleave', () => {
-                    isHovering = false;
-                });
-
-                // PHYSICS LOOP
-                function animate() {
-                    const rect = footerContainer.getBoundingClientRect();
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-
-                    if (!isHovering) {
-                        const time = Date.now() * 0.001; 
+                <div className="flex flex-col gap-32">
+                  {projects.map((project, index) => (
+                    <div key={project.id} 
+                         className="group cursor-pointer relative"
+                         onClick={() => onProjectClick(project)}
+                         onMouseEnter={() => setCursorHovered(true)}
+                         onMouseLeave={() => setCursorHovered(false)}>
+                      
+                      {/* Giant Immersive Card */}
+                      <div className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden rounded-[2rem] bg-gray-100 shadow-xl transition-all duration-700 hover:shadow-2xl hover:scale-[1.02]">
+                         {/* Image with Parallax-like scale on hover */}
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-[1.5s] ease-out"
+                          onError={(e) => { e.target.style.display='none'; e.target.nextSibling.classList.remove('hidden'); e.target.nextSibling.classList.add('flex'); }} 
+                        />
                         
-                        // Floating simulation
-                        const floatOffsetX = Math.sin(time) * 40; 
-                        const floatOffsetY = Math.cos(time * 0.8) * 30; 
+                        {/* Fallback if image fails */}
+                        <div className="hidden absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-400 items-center justify-center">
+                           <span className="text-9xl font-black text-white/50">{project.title.substring(0,1)}</span>
+                        </div>
 
-                        targetX = centerX + floatOffsetX;
-                        targetY = centerY + floatOffsetY;
-                    }
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
 
-                    // LERP for smooth movement
-                    currentX += (targetX - currentX) * 0.1;
-                    currentY += (targetY - currentY) * 0.1;
+                        {/* Text Content */}
+                        <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <div className="flex gap-3 mb-4 overflow-hidden flex-wrap">
+                                        {project.tags.slice(0, 3).map(tag => (
+                                            <Tag key={tag} text={tag} />
+                                        ))}
+                                    </div>
+                                    <h3 className="text-5xl md:text-8xl font-black tracking-tighter mb-2">{project.title}</h3>
+                                    <p className="text-xl md:text-2xl text-white/80 font-light">{project.subtitle}</p>
+                                </div>
+                                
+                                {/* Big Arrow Button */}
+                                <div className="hidden md:flex w-24 h-24 bg-white text-black rounded-full items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300 origin-bottom-right">
+                                    <IconArrowRight className="w-8 h-8 -rotate-45" />
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        };
 
-                    footerGlow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
-
-                    requestAnimationFrame(animate);
-                }
-                animate();
-            }
-
-            // --- Word Reveal Logic ---
-            const word = document.querySelector('.word-reveal');
-            const popup = document.getElementById('wordPopup');
-            const popupImg = document.getElementById('wordPopupImg');
-
-            if(word && popup) {
-                function randomRotation() {
-                    return (Math.random() * 16 - 8).toFixed(1); 
-                }
-
-                word.addEventListener('mouseenter', function() {
-                    const rect = word.getBoundingClientRect();
-                    const centerX = rect.left + window.scrollX + (rect.width / 2);
-                    const centerY = rect.top + window.scrollY + (rect.height / 2);
+        const ProjectDetail = ({ project, setCursorHovered }) => {
+          return (
+            <div className="min-h-screen bg-[#F5F5F5]">
+              
+              <div className="max-w-7xl mx-auto px-6 md:px-12 pt-40 pb-20">
+                
+                {/* Title Section with ICON */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
+                  <div className="md:col-span-8">
+                    <div className="flex items-start gap-6 mb-6">
+                        {/* PROJECT ICON */}
+                        <div className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 shrink-0">
+                             <img 
+                                src={project.logo || project.image} 
+                                alt="Logo" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.src = project.image; }} // Fallback
+                             />
+                        </div>
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mt-2">
+                          {project.title.toUpperCase()}
+                        </h1>
+                    </div>
                     
-                    popup.style.left = centerX + "px";
-                    popup.style.top = centerY + "px";
+                    <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  <div className="md:col-span-4 flex flex-col justify-end items-start gap-4">
+                    <div className="space-y-2">
+                      <div className="text-xs font-mono text-gray-400 uppercase">Role</div>
+                      <div className="font-bold text-lg">Unity Engineer</div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-xs font-mono text-gray-400 uppercase">Stack</div>
+                      <div className="flex flex-wrap gap-2">
+                         {project.tags.map(tag => (
+                           <TagDark key={tag} text={tag} />
+                         ))}
+                      </div>
+                    </div>
                     
-                    if(word.dataset.img) {
-                        popupImg.src = word.dataset.img;
-                    }
+                    <div className="flex gap-4 mt-8">
+                      {project.links?.youtube && (
+                        <a href={project.links.youtube} target="_blank" className="group flex items-center gap-2 font-bold hover:text-red-600 transition-colors" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
+                          <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconPlay className="w-4 h-4" fill="currentColor" /></div> Watch Demo
+                        </a>
+                      )}
+                       {project.links?.telegram && (
+                        <a href={project.links.telegram} target="_blank" className="group flex items-center gap-2 font-bold hover:text-blue-600 transition-colors" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
+                          <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconExternalLink className="w-4 h-4" /></div> Telegram
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-                    const angle = randomRotation();
-                    popup.style.transform = `translate(-50%, -60%) scale(1) rotate(${angle}deg)`;
-                    popup.classList.add('visible');
-                });
+                {/* Hero Image */}
+                <div className="w-full aspect-video bg-gray-200 rounded-3xl overflow-hidden mb-20 shadow-2xl relative">
+                   <img 
+                      src={project.image} 
+                      alt="Main" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
+                   />
+                   <div className="hidden absolute inset-0 bg-gray-100 items-center justify-center text-gray-400 font-mono">Image Not Available</div>
+                </div>
 
-                word.addEventListener('mouseleave', function() {
-                    popup.classList.remove('visible');
-                    popup.style.transform = `translate(-50%, -40%) scale(0.8) rotate(0deg)`;
-                });
-            }
+                {/* Content */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
+                  <div className="md:col-span-4">
+                     <h3 className="text-2xl font-bold border-t-2 border-black pt-4">Technical Details</h3>
+                  </div>
+                  <div className="md:col-span-8">
+                    <p className="text-lg md:text-xl leading-relaxed text-gray-700">
+                      {project.fullDescription}
+                    </p>
+                  </div>
+                </div>
 
-            // --- 3D Tilt Effect for Project Cards ---
-            const projectCards = document.querySelectorAll('.project-card');
-            projectCards.forEach((card) => {
-                card.addEventListener('mousemove', function(e) {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = (y - centerY) / 100;
-                    const rotateY = (x - centerX) / 100;
-                    const shadowX = -(x - centerX) / 8;
-                    const shadowY = -(y - centerY) / 8;
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${-rotateY}deg) translateZ(5px)`;
-                    card.style.boxShadow = `${shadowX}px ${shadowY}px 40px rgba(22, 22, 22, 0.15)`;
-                });
-                card.addEventListener('mouseleave', function() {
-                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
-                    card.style.boxShadow = 'none';
-                });
-            });
+                {/* Gallery */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {project.screenshots.map((shot, i) => (
+                     <div key={i} className="bg-white p-2 rounded-xl shadow-lg hover:transform hover:-translate-y-2 transition-transform duration-300 cursor-zoom-in">
+                       <img 
+                         src={shot} 
+                         alt={`Screenshot ${i}`} 
+                         className="w-full h-auto rounded-lg"
+                         onError={(e) => { e.target.parentElement.style.display='none'; }}
+                       />
+                     </div>
+                  ))}
+                </div>
 
-            // --- Modal Logic ---
-            const imageModal = document.getElementById('imageModal');
-            if (imageModal) {
-                imageModal.addEventListener('click', e => { if (e.target === imageModal) closeModal(); });
-            }
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-            
-            // --- 3D Buttons ---
-            const buttons = document.querySelectorAll('.email-button, .header-contact, .back-btn, .project-btn');
-            buttons.forEach(button => {
-                button.addEventListener('mousemove', function(e) {
-                    const rect = button.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = (y - centerY) / 4;
-                    const rotateY = (x - centerX) / 4;
-                    
-                    button.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${-rotateY}deg) translateZ(12px)`;
-                    
-                    if (button.classList.contains('header-contact')) {
-                        button.style.boxShadow = 'none';
-                    } else {
-                        const shadowX = -(x - centerX) / 3;
-                        const shadowY = -(y - centerY) / 3;
-                        button.style.boxShadow = `${shadowX}px ${shadowY}px 30px rgba(22, 22, 22, 0.35)`;
-                    }
-                });
-                button.addEventListener('mouseleave', function() {
-                    button.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
-                    button.style.boxShadow = 'none';
-                });
-            });
-        });
+                <div className="mt-32 border-t border-gray-300 pt-20 text-center pb-20">
+                  <p className="text-gray-400 font-mono mb-4 text-sm">END OF PROJECT</p>
+                  <div className="text-xl text-gray-500">Scroll up or click 'All Projects' to return</div>
+                </div>
 
-        function openModal(src) {
-            const modal = document.getElementById('imageModal');
-            document.getElementById('modalImage').src = src;
-            modal.classList.add('active');
-        }
-        function closeModal() { document.getElementById('imageModal').classList.remove('active'); }
-        
-        function openProject(projectId) {
-            document.getElementById('mainPage').style.display = 'none';
-            document.getElementById('projectsSection').style.display = 'none';
-            document.querySelector('footer').style.display = 'none';
-            
-            const project = document.getElementById(projectId);
-            if(project) {
-                project.classList.add('active');
-                window.scrollTo(0, 0);
-            }
-        }
-        
-        function backToMain() {
-            document.querySelectorAll('.project-detail').forEach(el => el.classList.remove('active'));
-            document.getElementById('mainPage').style.display = 'flex';
-            document.getElementById('projectsSection').style.display = 'block';
-            document.querySelector('footer').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
+              </div>
+            </div>
+          );
+        };
+
+        const Footer = ({ setCursorHovered }) => {
+          return (
+            <footer className="bg-[#161616] text-[#F5F5F5] py-20 px-6 md:px-12 relative overflow-hidden rounded-b-[3rem] md:rounded-none mb-4 md:mb-0">
+              <div className="max-w-7xl mx-auto flex flex-col items-center text-center z-10 relative">
+                <h2 className="text-[12vw] font-black tracking-tighter leading-none mb-8 mix-blend-difference select-none">
+                  LET'S TALK
+                </h2>
+                <a 
+                  href="mailto:alexsey.banchuk@gmail.com" 
+                  className="text-xl md:text-4xl border-b border-gray-600 pb-2 hover:text-yellow-400 hover:border-yellow-400 transition-colors mb-12 font-mono"
+                  onMouseEnter={() => setCursorHovered(true)}
+                  onMouseLeave={() => setCursorHovered(false)}
+                >
+                  alexsey.banchuk@gmail.com
+                </a>
+                
+                <div className="flex gap-8">
+                   <a href="https://github.com/nosok50" className="opacity-50 hover:opacity-100 transition-opacity uppercase font-bold tracking-widest text-sm" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>GitHub</a>
+                   <a href="https://www.linkedin.com/in/alexsey-banchuk/" className="opacity-50 hover:opacity-100 transition-opacity uppercase font-bold tracking-widest text-sm" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>LinkedIn</a>
+                   <a href="https://t.me/alexsey_banch" className="opacity-50 hover:opacity-100 transition-opacity uppercase font-bold tracking-widest text-sm" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>Telegram</a>
+                </div>
+                
+                <div className="mt-20 text-xs text-gray-600 font-mono">
+                  © 2025 Alexsey Ban. Built with ❤️ & React.
+                </div>
+              </div>
+              <div className="absolute bottom-[-200px] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-600/20 blur-[100px] rounded-full pointer-events-none animate-pulse" />
+            </footer>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PortfolioApp />);
     </script>
 </body>
 </html>
