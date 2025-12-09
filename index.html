@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexsey Ban | Unity Engineer</title>
+    <title>Alexsey Ban | Technical Game Designer</title>
     
-    <meta property="og:title" content="Alexsey Ban :)">
-    <meta property="og:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
+    <meta property="og:title" content="Alexsey Ban | Game Designer">
+    <meta property="og:description" content="I design engaging loops, balance economies, and build rapid prototypes.">
     <meta property="og:image" content="preview.png">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://alexseyban.space"> 
     
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Alexsey Ban :)">
-    <meta name="twitter:description" content="Alexsey, Unity engineer. I make games. Explore my portfolio and projects.">
+    <meta name="twitter:title" content="Alexsey Ban | Game Designer">
+    <meta name="twitter:description" content="I design engaging loops, balance economies, and build rapid prototypes.">
     <meta name="twitter:image" content="preview.png">
     
     <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -119,6 +119,12 @@
         }
 
         .no-scroll { overflow: hidden; }
+        
+        /* Slider Handle Styles */
+        .slider-handle {
+            /* High contrast border/shadow to ensure visibility on white/dark bg */
+            box-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 2px rgba(255,255,255,0.5);
+        }
     </style>
 </head>
 <body>
@@ -149,6 +155,9 @@
         const IconPlay = ({ className, fill }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill || "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         );
+        const IconGlobe = ({ className }) => (
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        );
 
         // --- APP COMPONENT ---
         const PortfolioApp = () => {
@@ -159,55 +168,69 @@
           const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
           const [cursorHovered, setCursorHovered] = useState(false);
           
-          // --- ACTUAL DATA FROM OLD SITE ---
+          // --- UPDATED PROJECT DATA (ORDER: MINELAND, YIELDIUM, ECOCITY) ---
           const projects = [
+            {
+              id: 'mineland',
+              title: 'Mineland',
+              subtitle: 'High-Load MMO Server',
+              logo: 'MinelandLogo.png',
+              image: 'MinelandTitle.png', 
+              detailImage: 'MinelandAfter.png', 
+              tags: ['1000+ Online', 'LiveOps', 'Multiplayer', 'Level Design'],
+              description: 'Multiplayer World with 1000+ Concurrent Players. Managed LiveOps strategy for a large-scale multiplayer server with 100k daily visitors. Responsible for player retention through a strict content pipeline: weekly events, seasonal updates, and economy balancing.',
+              role: 'LiveOps Manager & Game Designer',
+              toolkit: ['Excel (Balancing)', 'GitLab', 'Shell', 'WorldEdit'],
+              technicalDetails: [
+                  'LiveOps Pipeline: Synchronized content drops with monetization events to stabilize DAU.',
+                  'Economy Control: Monitored inflation and adjusted drop rates to maintain market health.',
+                  'Social Mechanics: Designed clan systems and cooperative challenges to boost long-term retention.'
+              ],
+              screenshots: ['MinelandScreen1.png', 'MinelandScreen2.png', 'MinelandScreen3.png', 'MinelandScreen4.png'],
+              links: { site: 'https://mineland.net' } 
+            },
+            {
+              id: 'yieldium',
+              title: 'Yieldium',
+              subtitle: 'Gamification Layer for Fintech App',
+              logo: 'YieldiumLogo.png', 
+              image: 'YieldiumTitle.png',
+              tags: ['Gamification', 'Fintech', 'Economy Model', 'System Design'], 
+              description: 'Designed a comprehensive progression system for an investment platform to increase user retention (LTV). Transformed routine financial actions into engaging gameplay loops using achievements, levels, and rewards. Created the mathematical model for the reward economy.',
+              role: 'System Game Designer',
+              toolkit: ['Figma', 'Excel (Math Modeling)', 'Notion', 'Miro'],
+              technicalDetails: [
+                  'Designed "Hero\'s Journey" user flows to guide new investors.',
+                  'Modeled economic impact of rewards on the project\'s burn rate.'
+              ],
+              slider: {
+                  before: 'YieldiumBefore.png',
+                  after: 'YieldiumAfter.png'
+              },
+              screenshots: ['YieldiumScreen1.png', 'YieldiumScreen2.png', 'YieldiumScreen3.png'],
+              links: {}
+            },
             {
               id: 'eco-city',
               title: 'Eco City Inc.',
               subtitle: 'Mobile Economic Strategy',
               logo: 'EcoCityLogo.png',
-              image: 'EcoCityTitle.png',
-              tags: ['Solo Project', 'Unity 6', 'Procedural Generation', 'A* Pathfinding', 'IAP', 'Ads', 'Cloud Saves'],
-              description: 'Mobile economic strategy based on Unity 6, gameplay built around creating complex production chains. The technical foundation relies on procedural generation via Perlin noise and logistics using weighted A* pathfinding algorithms.',
-              fullDescription: 'The project architecture supports a full commercial stack, including cloud saves and custom local data encryption to protect against tampering. This is a fully independent development, spanning the cycle from writing shaders to release and support.',
+              image: 'EcoCityTitle.png', 
+              tags: ['Solo', '50k+ Organic Installs', 'Mobile Game', 'Unity 6'],
+              description: 'Designed and developed a mobile city-building strategy from scratch. Focused on creating an addictive core loop and intuitive UI for casual players. The project achieved significant market success with over 50,000 organic installs on Google Play without a marketing budget.',
+              role: 'Game Designer & Prototyper',
+              toolkit: ['Solo', 'Unity (C#)', 'Figma', 'Google Play Console'],
+              technicalDetails: [
+                  'Full-cycle development: from GDD to Release.',
+                  'Implemented grid-based building systems and resource management logic.',
+                  'Analyzed player feedback to iterate on UI/UX, improving session length.'
+              ],
+              slider: {
+                  before: 'EcoCityBefore.png',
+                  after: 'EcoCityTitle.png'
+              },
               screenshots: ['EcoCityScreen1.png', 'EcoCityScreen2.png', 'EcoCityScreen3.png', 'EcoCityScreen4.png'],
               links: { youtube: 'https://www.youtube.com/@nosok5050', telegram: 'https://t.me/nosok5050' }
-            },
-            {
-              id: 'wordly',
-              title: 'Wordly',
-              subtitle: 'Logic Puzzle',
-              logo: 'WordsLogo.png',
-              image: 'WordsTitle.png',
-              tags: ['Mobile', 'Cryptography', 'DOTween', 'Modular Architecture'],
-              description: 'Logic puzzle with an extensive dictionary of 60,000 positions. The key feature lies in a non-standard offline encryption system allowing players to exchange guessed words between devices without server or internet involvement.',
-              fullDescription: 'The implemented algorithm generates unique keys, allowing players to exchange guessed words between devices without server or internet involvement. The project serves as a technical demonstration of complex UI architecture, DOTween animations, and algorithmic logic outside standard game loops.',
-              screenshots: ['WordsScreen1.png', 'WordsScreen2.png', 'WordsScreen3.png', 'WordsScreen4.png'],
-              links: {} 
-            },
-            {
-              id: 'rocky-quest',
-              title: 'Rocky Quest',
-              subtitle: 'Hybrid Casual Strategy',
-              logo: 'RockyQuestLogo.png',
-              image: 'RockyQuestTitle.png',
-              tags: ['3D', 'Hybrid Casual', 'AI Pathfinding', 'Modular Building System', 'IAP', 'Ads'],
-              description: 'Hybrid casual project combining resource mining mechanics and Tower Defense. Development was conducted in a team format, requiring synchronization of economic upgrade cycles with active combat phases.',
-              fullDescription: 'The technical stack included a modular base building system, AI enemy navigation logic, and IAP monetization integration. The application passed closed testing stages for performance debugging and core mechanic balancing.',
-              screenshots: ['RockyQuestScreen1.png', 'RockyQuestScreen2.png', 'RockyQuestScreen3.png', 'RockyQuestScreen4.png', 'RockyQuestScreen5.png'],
-              links: {}
-            },
-            {
-              id: 'drilling-app',
-              title: 'Drilling Operations App',
-              subtitle: 'Industrial IoT Monitor',
-              logo: 'DrillLogo.png',
-              image: 'Drill.png',
-              tags: ['3D', 'NDA', 'IoT Integration', 'Real-time Telemetry'],
-              description: 'Application for monitoring industrial drilling rigs. The program displays a 3D copy of the drill, synchronized in real-time with IoT sensors on the equipment.',
-              fullDescription: 'If a part overheats or requires replacement, the system immediately highlights the problem zone and issues a warning. An engineer can virtually disassemble the device on screen to study the condition of each node in detail and prevent breakdown before it occurs.',
-              screenshots: ['DrillScreen1.png'],
-              links: {}
             }
           ];
 
@@ -285,7 +308,7 @@
         const Preloader = () => (
           <div className="fixed inset-0 bg-[#161616] z-[9999] flex items-center justify-center text-[#F5F5F5] flex-col">
             <div className="text-4xl md:text-6xl font-black tracking-tighter animate-pulse">ALEXSEY</div>
-            <div className="mt-4 text-xs md:text-sm font-mono opacity-50">INITIALIZING SYSTEM...</div>
+            <div className="mt-4 text-xs md:text-sm font-mono opacity-50">INITIALIZING PROFILE...</div>
           </div>
         );
 
@@ -304,9 +327,7 @@
                     </div>
 
                     <div className="w-full flex justify-between items-center pointer-events-auto">
-                        {/* ANIMATED LEFT CONTAINER */}
                         <div className="relative h-10 w-48 overflow-hidden"> 
-                            {/* LOGO STATE */}
                             <div 
                                 className={`absolute inset-0 flex items-center transition-all duration-500 ease-out transform ${
                                     view === 'home' ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
@@ -322,7 +343,6 @@
                                 </div>
                             </div>
 
-                            {/* BACK BUTTON STATE */}
                             <div 
                                 className={`absolute inset-0 flex items-center transition-all duration-500 ease-out transform ${
                                     view === 'project' ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
@@ -342,7 +362,6 @@
                             </div>
                         </div>
 
-                        {/* RIGHT SIDE */}
                         <div 
                             className={`transition-all duration-500 ease-out ${
                                 view === 'home' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
@@ -370,22 +389,18 @@
                 <p className="text-xl md:text-2xl font-medium mb-4 opacity-0 animate-blur-in-up" style={{animationDelay: '0.1s'}}>
                   Hello, I am
                 </p>
-                <h1 className="text-[13vw] leading-[0.85] font-black tracking-tighter text-[#161616] mb-8 select-none">
+                <h1 className="text-[10vw] xl:text-[8vw] leading-[0.95] font-black tracking-tighter text-[#161616] mb-8 select-none">
                   <div className="overflow-hidden">
-                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.2s'}}>UNITY</span>
+                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.2s'}}>TECHNICAL</span>
                   </div>
                   <div className="overflow-hidden">
-                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.35s'}}>ENGINEER</span>
+                    <span className="block transform opacity-0 animate-blur-in-up" style={{animationDelay: '0.35s'}}>GAME DESIGNER</span>
                   </div>
                 </h1>
                 
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-8 opacity-0 animate-blur-in-up" style={{animationDelay: '0.6s'}}>
-                  <p className="max-w-xl text-lg md:text-xl text-gray-600 leading-relaxed">
-                    I craft immersive interactive experiences and <span className="relative inline-block font-bold text-black border-b-2 border-black group cursor-help" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
-                      games
-                      <img src="secret.png" alt="" className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rotate-3 scale-0 group-hover:scale-100 origin-bottom" onError={(e) => e.target.style.display='none'} />
-                    </span>. 
-                    Explore my portfolio and projects.
+                  <p className="max-w-2xl text-lg md:text-xl text-gray-600 leading-relaxed">
+                    I design engaging loops, balance economies, and build rapid prototypes that drive retention and organic growth.
                   </p>
                   
                   <div className="flex gap-4">
@@ -412,32 +427,114 @@
           </a>
         );
 
-        // --- STYLISH TAG COMPONENT ---
+        // --- STYLISH TAG COMPONENT (Neutral) ---
         const Tag = ({ text }) => {
-            // Logic to highlight key tags based on your old site preferences (Solo, NDA are red)
-            const isRed = ['Solo', 'NDA', 'Unity 6', 'Unity', 'IAP'].some(key => text.includes(key));
-            
+            // Removed specific color logic for a cleaner, neutral glassmorphism look
             return (
-                <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase backdrop-blur-md border ${
-                    isRed 
-                    ? 'border-red-500/30 bg-red-500/10 text-red-600 font-bold shadow-[0_0_10px_rgba(239,68,68,0.2)]' 
-                    : 'border-white/30 text-white/90 bg-black/10' 
-                }`}>
+                <span className="px-3 py-1 rounded-full text-xs font-mono uppercase backdrop-blur-md border border-white/20 text-white/90 bg-black/20 hover:bg-black/30 transition-colors">
                     {text}
                 </span>
             );
         };
         
         const TagDark = ({ text }) => {
-            const isRed = ['Solo', 'NDA', 'Unity 6', 'Unity', 'IAP'].some(key => text.includes(key));
             return (
-                <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase border ${
-                    isRed 
-                    ? 'border-red-500/30 bg-red-50 text-red-600 font-bold' 
-                    : 'border-gray-200 text-gray-500 bg-white'
-                }`}>
+                <span className="px-3 py-1 rounded-full text-xs font-mono uppercase border border-gray-200 text-gray-500 bg-white">
                     {text}
                 </span>
+            );
+        };
+
+        // --- BEFORE / AFTER SLIDER COMPONENT ---
+        const BeforeAfterSlider = ({ beforeImage, afterImage, setCursorHovered }) => {
+            const [sliderPosition, setSliderPosition] = useState(0); // Start at 0
+            const containerRef = useRef(null);
+            const isDragging = useRef(false);
+            const isInteracted = useRef(false); // Track if user has taken control
+
+            // Auto-animate on mount
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    if (!isInteracted.current) {
+                        setSliderPosition(33);
+                    }
+                }, 100);
+                return () => clearTimeout(timer);
+            }, []);
+
+            const handleMove = (clientX) => {
+                if (!containerRef.current) return;
+                const rect = containerRef.current.getBoundingClientRect();
+                const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                const percentage = (x / rect.width) * 100;
+                setSliderPosition(percentage);
+            };
+
+            const onMouseMove = (e) => {
+                if (isDragging.current) handleMove(e.clientX);
+            };
+
+            const onTouchMove = (e) => {
+                if (isDragging.current) handleMove(e.touches[0].clientX);
+            };
+
+            const startDrag = () => { 
+                isDragging.current = true; 
+                isInteracted.current = true; // Stop auto-animation
+            };
+            const stopDrag = () => { isDragging.current = false; };
+
+            return (
+                <div 
+                    className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl select-none cursor-ew-resize group"
+                    ref={containerRef}
+                    onMouseDown={startDrag}
+                    onMouseUp={stopDrag}
+                    onMouseLeave={stopDrag}
+                    onMouseMove={onMouseMove}
+                    onTouchStart={startDrag}
+                    onTouchEnd={stopDrag}
+                    onTouchMove={onTouchMove}
+                    onMouseEnter={() => setCursorHovered(true)} 
+                >
+                    {/* AFTER IMAGE (Background) */}
+                    <img src={afterImage} alt="After" className="absolute top-0 left-0 w-full h-full object-cover" draggable="false" />
+                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur text-white px-3 py-1 rounded text-xs font-bold uppercase pointer-events-none border border-white/20">After</div>
+
+                    {/* BEFORE IMAGE (Clipped) */}
+                    <div 
+                        className="absolute top-0 left-0 h-full overflow-hidden border-r-[3px] border-white slider-handle"
+                        style={{ 
+                            width: `${sliderPosition}%`,
+                            transition: isDragging.current ? 'none' : 'width 1s cubic-bezier(0.22, 1, 0.36, 1)' 
+                        }}
+                    >
+                        <img 
+                            src={beforeImage} 
+                            alt="Before" 
+                            className="absolute top-0 left-0 max-w-none h-full object-cover" 
+                            style={{ width: containerRef.current ? containerRef.current.offsetWidth : '100%' }} 
+                            draggable="false"
+                        />
+                        <div className="absolute top-4 left-4 bg-black/50 backdrop-blur text-white px-3 py-1 rounded text-xs font-bold uppercase pointer-events-none border border-white/20">Before</div>
+                    </div>
+
+                    {/* HANDLE */}
+                    <div 
+                        className="absolute top-0 bottom-0 w-12 -ml-6 flex items-center justify-center cursor-ew-resize pointer-events-none"
+                        style={{ 
+                            left: `${sliderPosition}%`,
+                            transition: isDragging.current ? 'none' : 'left 1s cubic-bezier(0.22, 1, 0.36, 1)' 
+                        }}
+                    >
+                        {/* High contrast handle */}
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black/10 relative shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+                            <div className="absolute inset-0 rounded-full border border-white/50"></div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#161616" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="rotate-180"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </div>
+                    </div>
+                </div>
             );
         };
 
@@ -536,13 +633,13 @@
                   <div className="md:col-span-4 flex flex-col justify-end items-start gap-4">
                     <div className="space-y-2">
                       <div className="text-xs font-mono text-gray-400 uppercase">Role</div>
-                      <div className="font-bold text-lg">Unity Engineer</div>
+                      <div className="font-bold text-lg">{project.role}</div>
                     </div>
                     <div className="space-y-2">
-                      <div className="text-xs font-mono text-gray-400 uppercase">Stack</div>
+                      <div className="text-xs font-mono text-gray-400 uppercase">Toolkit</div>
                       <div className="flex flex-wrap gap-2">
-                         {project.tags.map(tag => (
-                           <TagDark key={tag} text={tag} />
+                         {project.toolkit.map(tool => (
+                           <TagDark key={tool} text={tool} />
                          ))}
                       </div>
                     </div>
@@ -550,7 +647,7 @@
                     <div className="flex gap-4 mt-8">
                       {project.links?.youtube && (
                         <a href={project.links.youtube} target="_blank" className="group flex items-center gap-2 font-bold hover:text-red-600 transition-colors" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
-                          <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconPlay className="w-4 h-4" fill="currentColor" /></div> Watch Demo
+                          <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconPlay className="w-4 h-4" fill="currentColor" /></div> YouTube
                         </a>
                       )}
                        {project.links?.telegram && (
@@ -558,19 +655,34 @@
                           <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconExternalLink className="w-4 h-4" /></div> Telegram
                         </a>
                       )}
+                      {project.links?.site && (
+                        <a href={project.links.site} target="_blank" className="group flex items-center gap-2 font-bold hover:text-green-600 transition-colors" onMouseEnter={() => setCursorHovered(true)} onMouseLeave={() => setCursorHovered(false)}>
+                          <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform"><IconGlobe className="w-4 h-4" /></div> Site
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Hero Image */}
-                <div className="w-full aspect-video bg-gray-200 rounded-3xl overflow-hidden mb-20 shadow-2xl relative">
-                   <img 
-                      src={project.image} 
-                      alt="Main" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
-                   />
-                   <div className="hidden absolute inset-0 bg-gray-100 items-center justify-center text-gray-400 font-mono">Image Not Available</div>
+                {/* Hero Media (Slider or Image) */}
+                <div className="mb-20">
+                    {project.slider ? (
+                        <BeforeAfterSlider 
+                            beforeImage={project.slider.before} 
+                            afterImage={project.slider.after} 
+                            setCursorHovered={setCursorHovered} 
+                        />
+                    ) : (
+                        <div className="w-full aspect-video bg-gray-200 rounded-3xl overflow-hidden shadow-2xl relative">
+                           <img 
+                              src={project.detailImage || project.image} 
+                              alt="Main" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
+                           />
+                           <div className="hidden absolute inset-0 bg-gray-100 items-center justify-center text-gray-400 font-mono">Image Not Available</div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -579,9 +691,11 @@
                      <h3 className="text-2xl font-bold border-t-2 border-black pt-4">Technical Details</h3>
                   </div>
                   <div className="md:col-span-8">
-                    <p className="text-lg md:text-xl leading-relaxed text-gray-700">
-                      {project.fullDescription}
-                    </p>
+                     <ul className="list-disc pl-5 space-y-4 text-lg md:text-xl text-gray-700 leading-relaxed">
+                        {project.technicalDetails.map((detail, idx) => (
+                            <li key={idx}>{detail}</li>
+                        ))}
+                     </ul>
                   </div>
                 </div>
 
